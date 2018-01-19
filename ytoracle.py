@@ -136,7 +136,6 @@ def main():
     videoId = args.videoid
     key = args.key
    
-    #getComments("bqsfkGbBU6k","AIzaSyAKVl2B0vDob_FC34z11TQcg3lGjxYYe70")
     getComments(videoId,key)
     
 if __name__ == '__main__':
