@@ -47,9 +47,19 @@ def postTransaction(address,commentId,username):
     h = httplib2.Http()
     url = "http://localhost:3000/txs"
     headers = {'content-type':'application/x-www-form-urlencoded'}
-    resp, content = h.request(url, method="POST", body=tx, headers=headers)
+    response, content = h.request(url, method="POST", body=tx, headers=headers)
     
-    print(resp)
+    #check response
+    if(response["status"] != "200"):
+        print("Invalid Transaction")
+        sys.exit(0)
+
+    data = json.loads(content)
+
+    #print transaction log i.e if transaction does not
+    #mutate blockchain
+    print(data["result"]["check_tx"]["log"])
+    
                     
 
 def processComments(comments):
@@ -97,7 +107,7 @@ def requestComments(videoId, key, pageToken):
     response, content = http.request(url, 'GET')
 
     #check response
-    if(response["status"] == "400"):
+    if(response["status"] != "200"):
         print("Invalid key or videoId")
         sys.exit(0)
 
