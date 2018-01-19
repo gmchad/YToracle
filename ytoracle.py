@@ -10,21 +10,21 @@ import json
 import base58
 import argparse
 
-def postTransaction(address,commentId,username):
-    
-    oneSirajcoin = 10e8
+def postTransaction(address,commentId,user):
+
+    oneSirajcoin = 1e8
 
     #create transaction
     tx = json.dumps({
     'from':[
         {
             'type':'communityGrowth',
-            'amount':10*oneSirajcoin,
-            'id':username,
+            'amount':12.5*oneSirajcoin,
+            'id':user,
             'data:':commentId
         }
     ],
-                    
+
     'to': [
         {
             'address':address,
@@ -35,40 +35,29 @@ def postTransaction(address,commentId,username):
             'amount':1.5*oneSirajcoin
         },
         {
-            'address':'sirajaddress',
+            'address':'siraj',
             'amount':oneSirajcoin
         }
     ]
     })
-    
-    # TODO : sign transaction
-    
-    #post transaction
+
+    #post transaction to signer
     h = httplib2.Http()
-    url = "http://localhost:3000/txs"
-    headers = {'content-type':'application/x-www-form-urlencoded'}
-    response, content = h.request(url, method="POST", body=tx, headers=headers)
-    
-    #check response
-    if(response["status"] != "200"):
-        print("Invalid Transaction")
-        sys.exit(0)
+    url = "http://localhost:3001/"
+    headers = {'content-type':'application/json'}
+    resp, content = h.request(url, method="POST", body=tx, headers=headers)
 
-    data = json.loads(content)
-
-    #print transaction log i.e if transaction does not
-    #mutate blockchain
-    print(data["result"]["check_tx"]["log"])
-    
-                    
+    print(resp)
 
 def processComments(comments):
-    
+
     addressLength = 33
-    
+
     #find address based on length of words in comments
     comment = comments["snippet"]["topLevelComment"]["snippet"]["textOriginal"]
     words = comment.split(" ")
+
+    address = ""
     for word in words:
         #check for possible key
         if(len(word) == addressLength):
@@ -80,28 +69,31 @@ def processComments(comments):
             except ValueError:
                 print("Invalid key")
 
+    if(address == ""):
+        return
+
 
     #comment Id
     commentId = comments["id"]
-    
-    #username
-    username = comments["snippet"]["topLevelComment"]["snippet"]["authorDisplayName"]
-    username = 'youtube:' + username
 
-    postTransaction(address,commentId,username)
-    
+    #author id
+    author = comments["snippet"]["topLevelComment"]["snippet"]["authorChannelId"]["value"]
+    author = 'youtube:' + author
+
+    postTransaction(address,commentId,author)
+
 
 def requestComments(videoId, key, pageToken):
-    
+
     http = httplib2.Http()
     baseurl = 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&maxResults=100'
-    
+
     #check for pageToken
     if(pageToken != ""):
         pageToken = '&pageToken='+ pageToken
-        
+
     url = baseurl + '&videoId=' + videoId + '&key=' + key + pageToken
-    
+
     #GET request
     response, content = http.request(url, 'GET')
 
@@ -111,7 +103,7 @@ def requestComments(videoId, key, pageToken):
         sys.exit(0)
 
     data = json.loads(content)
-    
+
     #check for morePages
     nextPageToken = ""
     if "nextPageToken" not in data:
@@ -119,44 +111,41 @@ def requestComments(videoId, key, pageToken):
     else:
         nextPageToken = data["nextPageToken"]
         print(nextPageToken)
-        
-    #return JSON and nextpage is available 
+
+    #return JSON and nextpage is available
     return data,nextPageToken
-    
-    
+
+
 def getComments(videoId, key):
-    
+
     nextPageToken = ""
 
-    #cycle through all pages in comments grabbing 100 comments 
+    #cycle through all pages in comments grabbing 100 comments
     while(True):
-        
+
         data, nextPageToken = requestComments(videoId,key,nextPageToken)
-        
+
         comments = data["items"]
         print(len(comments))
-        
+
         for i in xrange(len(comments)):
             #comment = comments[i]["snippet"]["topLevelComment"]["snippet"]["textOriginal"]
             processComments(comments[i])
         if(nextPageToken == ""):
             break
 
-            
 def main():
-    
+
     parser = argparse.ArgumentParser(description='Youtube Oracle')
     parser.add_argument('--videoId',required=True,help="Required; ID for video for which the comment will be inserted.")
     parser.add_argument('--key',required=True,help="Youtube API key")
     args = parser.parse_args()
-   
-    videoId = args.videoId
-    key = args.key
 
-    getComments(videoId,key)
-    
-    
+    videoId = args.videoId
+    apiKey = args.key
+
+    getComments(videoId,apiKey)
+
+
 if __name__ == '__main__':
     main()
-    
-    
