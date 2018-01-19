@@ -1,0 +1,29 @@
+{
+  "name": "YToracle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "signer.js",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "body-parser": "^1.18.2",
+    "coins": "^2.1.0",
+    "express": "^4.16.2",
+    "lotion": "^0.1.9",
+    "secp256k1": "^3.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chadlohrli/YToracle.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chadlohrli/YToracle/issues"
+  },
+  "homepage": "https://github.com/chadlohrli/YToracle#readme"
+}
