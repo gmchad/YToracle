@@ -13,7 +13,7 @@ import argparse
 def postTransaction(address,commentId,username):
     
     oneSirajcoin = 10e8
-    
+
     #create transaction
     tx = json.dumps({
     'from':[
@@ -95,6 +95,12 @@ def requestComments(videoId, key, pageToken):
     
     #GET request
     response, content = http.request(url, 'GET')
+
+    #check response
+    if(response["status"] == "400"):
+        print("Invalid key or videoId")
+        sys.exit(0)
+
     data = json.loads(content)
     
     #check for morePages
@@ -139,6 +145,7 @@ def main():
     key = args.key
 
     getComments(videoId,key)
+    
     
 if __name__ == '__main__':
     main()
