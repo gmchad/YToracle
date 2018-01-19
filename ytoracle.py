@@ -74,7 +74,6 @@ def processComments(comments):
         if(len(word) == addressLength):
             try:
                 #base58 check for valid address
-                word = 'b'+word
                 base58.b58decode_check(word)
                 address = word
                 break
