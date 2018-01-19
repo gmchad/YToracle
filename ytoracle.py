@@ -11,7 +11,9 @@ import base58
 import argparse
 
 def postTransaction(address,commentId,username):
-       
+    
+    oneSirajcoin = 10e8
+    
     #create transaction
     tx = json.dumps({
     'from':[
@@ -129,13 +131,13 @@ def getComments(videoId, key):
 def main():
     
     parser = argparse.ArgumentParser(description='Youtube Oracle')
-    parser.add_argument('--videoId',help="Required; ID for video for which the comment will be inserted.")
-    parser.add_argument('--key',help="Youtube API key")
+    parser.add_argument('--videoId',required=True,help="Required; ID for video for which the comment will be inserted.")
+    parser.add_argument('--key',required=True,help="Youtube API key")
     args = parser.parse_args()
-    
-    videoId = args.videoid
-    key = args.key
    
+    videoId = args.videoId
+    key = args.key
+
     getComments(videoId,key)
     
 if __name__ == '__main__':
